@@ -1,4 +1,3 @@
-import { link } from "fs";
 import prompt from "./prompt";
 
 type TrasverseReturnTypes = "index" | "value";
@@ -24,8 +23,8 @@ class LinkedList {
           returnType?: TrasverseReturnTypes,
           current: Node = this.head, 
           i: number = 0, 
-  ): Node | string | number {
-
+  ): Node | string | number | undefined {
+    if (!current) return;
     if (compareTo === "index" && isEqual(i) || compareTo === "value" && isEqual(current.data)) {
       switch (returnType) {
         case "index":
@@ -37,6 +36,7 @@ class LinkedList {
       }
     }
     const increment = i + 1;
+    console.log(current.next);
     return this.#search(compareTo, isEqual, returnType, current.next, increment);
   }
 
@@ -68,11 +68,12 @@ class LinkedList {
     const secondLast = this.#search("index", comparator) as Node;
     this.tail = secondLast;
     secondLast.next = undefined;
+    this.#size--;
   };
 
   contains(value: string): boolean {
     const comparator = (target_value: string | number) => value == target_value;
-    const containing = this.#search("value", comparator) as Node;
+    const containing = this.#search("value", comparator);
 
     return !!containing;
   };
@@ -104,12 +105,16 @@ class LinkedList {
       data: value,
       next: targetNext
     };
+
+    this.#size++;
   };
 
   removeAt(index: number): void {
     const previous = this.at(index - 1);
     const current = previous.next as Node;
     previous.next = current.next;
+
+    this.#size--;
   };
 }
 
@@ -136,7 +141,14 @@ const linkedList = new LinkedList(
   }
 )
 
-linkedList.pop()
+linkedList.append("f");
+linkedList.prepend("0");
+//linkedList.insertAt(1, "ab");
+//linkedList.removeAt(3);
+console.log(linkedList.at(1).data);
+console.log(linkedList.contains("1"));
+console.log(linkedList.contains("0"));
+console.log(linkedList.findIndex("d"));
 console.log(linkedList.toString());
 
 /*

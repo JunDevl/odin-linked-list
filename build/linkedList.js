@@ -15,6 +15,8 @@ class LinkedList {
         this.tail = values[values.length - 1];
     }
     #search(compareTo, isEqual, returnType, current = this.head, i = 0) {
+        if (!current)
+            return;
         if (compareTo === "index" && isEqual(i) || compareTo === "value" && isEqual(current.data)) {
             switch (returnType) {
                 case "index":
@@ -26,6 +28,7 @@ class LinkedList {
             }
         }
         const increment = i + 1;
+        console.log(current.next);
         return this.#search(compareTo, isEqual, returnType, current.next, increment);
     }
     get Size() { return this.#size; }
@@ -53,6 +56,7 @@ class LinkedList {
         const secondLast = this.#search("index", comparator);
         this.tail = secondLast;
         secondLast.next = undefined;
+        this.#size--;
     }
     ;
     contains(value) {
@@ -84,12 +88,14 @@ class LinkedList {
             data: value,
             next: targetNext
         };
+        this.#size++;
     }
     ;
     removeAt(index) {
         const previous = this.at(index - 1);
         const current = previous.next;
         previous.next = current.next;
+        this.#size--;
     }
     ;
 }
@@ -104,6 +110,11 @@ const linkedList = new LinkedList({
 }, {
     data: "e"
 });
-linkedList.pop();
+linkedList.append("f");
+linkedList.prepend("0");
+console.log(linkedList.at(1).data);
+console.log(linkedList.contains("1"));
+console.log(linkedList.contains("0"));
+console.log(linkedList.findIndex("d"));
 console.log(linkedList.toString());
 //# sourceMappingURL=linkedList.js.map
