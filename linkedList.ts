@@ -21,7 +21,7 @@ class LinkedList {
   #search(compareTo: TrasverseReturnTypes,
           isEqual: (predicate: number | string) => boolean,
           returnType?: TrasverseReturnTypes,
-          current: Node = this.head, 
+          current: Node | null = this.head, 
           i: number = 0, 
   ): Node | string | number | undefined {
     if (!current) return;
@@ -36,8 +36,8 @@ class LinkedList {
       }
     }
     const increment = i + 1;
-    console.log(current.next);
-    return this.#search(compareTo, isEqual, returnType, current.next, increment);
+    const next = current.next ?? null;
+    return this.#search(compareTo, isEqual, returnType, next, increment);
   }
 
   get Size() {return this.#size;}
@@ -57,9 +57,9 @@ class LinkedList {
     this.#size++;
   };
 
-  at (index: number): Node {
+  at (index: number): Node | undefined {
     const comparator = (target_i: string | number) => index == target_i;
-    return this.#search("index", comparator) as Node;
+    return this.#search("index", comparator) as Node | undefined;
   };
 
   pop(): void {
@@ -78,9 +78,9 @@ class LinkedList {
     return !!containing;
   };
 
-  findIndex(value: string): number | null {
+  findIndex(value: string): number | undefined {
     const comparator = (target_value: string | number) => value == target_value;
-    return this.#search("value", comparator, "index") as number;
+    return this.#search("value", comparator, "index") as number | undefined;
   };
 
   toString(): string {
@@ -97,22 +97,30 @@ class LinkedList {
     return result;
   };
 
-  insertAt(index: number, value: string): void {
-    const target = this.at(index);
-    const targetNext = target.next;
+  insertAt(index: number, value: string): void | undefined {
+    const previous = this.at(index - 1);
 
-    target.next = {
+    if (!previous) return;
+    const previousNext = previous.next;
+
+    previous.next = {
       data: value,
-      next: targetNext
+      next: previousNext
     };
 
     this.#size++;
   };
 
-  removeAt(index: number): void {
+  removeAt(index: number): void | undefined {
     const previous = this.at(index - 1);
-    const current = previous.next as Node;
-    previous.next = current.next;
+    if (!previous) return;
+
+    const current = previous.next;
+
+    if (current)
+      previous.next = current.next as Node;
+    else
+      previous.next = undefined;
 
     this.#size--;
   };
@@ -123,35 +131,28 @@ interface Node {
   next?: Node,
 }
 
-const linkedList = new LinkedList(
-  {
-    data: "a"
-  },
-  {
-    data: "b"
-  },
-  {
-    data: "c"
-  },
-  {
-    data: "d"
-  },
-  {
-    data: "e"
-  }
+let linkedList: LinkedList;
+
+prompt("Enter an array of objects with the current structure:\n" 
+  + "{\n"
+  + "  data: string\n"
+  + "}\n"
 )
+  .then((value) => {
+    linkedList = new LinkedList(...JSON.parse(value as string) as Node[])
+    
+    linkedList.append("f");
+    linkedList.prepend("0");
+    linkedList.insertAt(1, "ab");
+    linkedList.insertAt(14, "error");
+    linkedList.removeAt(3);
+    linkedList.removeAt(45);
+    console.log(linkedList.at(1));
+    console.log(linkedList.at(90));
+    console.log(linkedList.contains("1"));
+    console.log(linkedList.contains("0"));
+    console.log(linkedList.findIndex("d"));
+    console.log(linkedList.findIndex("inexistent"));
+    console.log(linkedList.toString());
+  })
 
-linkedList.append("f");
-linkedList.prepend("0");
-//linkedList.insertAt(1, "ab");
-//linkedList.removeAt(3);
-console.log(linkedList.at(1).data);
-console.log(linkedList.contains("1"));
-console.log(linkedList.contains("0"));
-console.log(linkedList.findIndex("d"));
-console.log(linkedList.toString());
-
-/*
-prompt("Enter an array:\n")
-.then((value) => console.log(preorderTransversal(JSON.parse(value as string))))
-*/

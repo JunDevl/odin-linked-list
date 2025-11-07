@@ -1,5 +1,9 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const prompt_1 = __importDefault(require("./prompt"));
 class LinkedList {
     head;
     tail;
@@ -28,8 +32,8 @@ class LinkedList {
             }
         }
         const increment = i + 1;
-        console.log(current.next);
-        return this.#search(compareTo, isEqual, returnType, current.next, increment);
+        const next = current.next ?? null;
+        return this.#search(compareTo, isEqual, returnType, next, increment);
     }
     get Size() { return this.#size; }
     append(value) {
@@ -82,39 +86,49 @@ class LinkedList {
     }
     ;
     insertAt(index, value) {
-        const target = this.at(index);
-        const targetNext = target.next;
-        target.next = {
+        const previous = this.at(index - 1);
+        if (!previous)
+            return;
+        const previousNext = previous.next;
+        previous.next = {
             data: value,
-            next: targetNext
+            next: previousNext
         };
         this.#size++;
     }
     ;
     removeAt(index) {
         const previous = this.at(index - 1);
+        if (!previous)
+            return;
         const current = previous.next;
-        previous.next = current.next;
+        if (current)
+            previous.next = current.next;
+        else
+            previous.next = undefined;
         this.#size--;
     }
     ;
 }
-const linkedList = new LinkedList({
-    data: "a"
-}, {
-    data: "b"
-}, {
-    data: "c"
-}, {
-    data: "d"
-}, {
-    data: "e"
+let linkedList;
+(0, prompt_1.default)("Enter an array of objects with the current structure:\n"
+    + "{\n"
+    + "  data: string\n"
+    + "}\n")
+    .then((value) => {
+    linkedList = new LinkedList(...JSON.parse(value));
+    linkedList.append("f");
+    linkedList.prepend("0");
+    linkedList.insertAt(1, "ab");
+    linkedList.insertAt(14, "error");
+    linkedList.removeAt(3);
+    linkedList.removeAt(45);
+    console.log(linkedList.at(1));
+    console.log(linkedList.at(90));
+    console.log(linkedList.contains("1"));
+    console.log(linkedList.contains("0"));
+    console.log(linkedList.findIndex("d"));
+    console.log(linkedList.findIndex("inexistent"));
+    console.log(linkedList.toString());
 });
-linkedList.append("f");
-linkedList.prepend("0");
-console.log(linkedList.at(1).data);
-console.log(linkedList.contains("1"));
-console.log(linkedList.contains("0"));
-console.log(linkedList.findIndex("d"));
-console.log(linkedList.toString());
 //# sourceMappingURL=linkedList.js.map
