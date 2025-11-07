@@ -108,6 +108,8 @@ class LinkedList {
       next: previousNext
     };
 
+    if (!previous.next.next) this.tail = previous.next
+
     this.#size++;
   };
 
@@ -119,8 +121,6 @@ class LinkedList {
 
     if (current)
       previous.next = current.next as Node;
-    else
-      previous.next = undefined;
 
     this.#size--;
   };
